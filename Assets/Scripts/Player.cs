@@ -5,8 +5,16 @@ using UnityEngine;
 // Monobehavior é a super classe que permite ao Unity adicionar comportamentos a gameObjects do projeto
 public class Player : MonoBehaviour
 {
+
+    public GameObject _laserPrefab;
+
     [SerializeField]
-    private float speed = 5.0f;
+    private float _speed = 5.0f;
+
+    [SerializeField]
+    private float _fireRate = 0.25f;
+
+    private float _canFire = 0.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +25,24 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {      
-        Movements();   
+        Movements(); 
+
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButton(0)) {
+            Shoot();          
+        } 
+       
+        
+    }
+
+    private void Shoot()
+    {
+        // Spawn my laser
+        // Quaternion.identity: No rotation or default rotation
+        if (Time.time > _canFire)
+        {
+            Instantiate(_laserPrefab, transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity);
+            _canFire = Time.time + _fireRate; 
+        }
     }
 
     private void Movements() {
@@ -28,8 +53,8 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         // Time.deltaTime:  é o intervalo de tempo entre um Update e outro
-        transform.Translate(Vector3.right * speed * horizontalInput * Time.deltaTime);
-        transform.Translate(Vector3.up * speed * verticalInput * Time.deltaTime);
+        transform.Translate(Vector3.right * _speed * horizontalInput * Time.deltaTime);
+        transform.Translate(Vector3.up * _speed * verticalInput * Time.deltaTime);
 
         // Y BOUNDARIES 
         if (transform.position.y > 0) 

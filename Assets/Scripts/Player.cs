@@ -5,8 +5,15 @@ using UnityEngine;
 // Monobehavior é a super classe que permite ao Unity adicionar comportamentos a gameObjects do projeto
 public class Player : MonoBehaviour
 {
+    
+    [SerializeField]
+    private bool canTrippleShoot = false;
 
-    public GameObject _laserPrefab;
+    [SerializeField]
+    private GameObject _laserPrefab;
+
+    [SerializeField]
+    private GameObject _trippleShootPrefab;
 
     [SerializeField]
     private float _speed = 5.0f;
@@ -30,8 +37,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButton(0)) {
             Shoot();          
         } 
-       
-        
+
     }
 
     private void Shoot()
@@ -40,9 +46,14 @@ public class Player : MonoBehaviour
         // Quaternion.identity: No rotation or default rotation
         if (Time.time > _canFire)
         {
-            Instantiate(_laserPrefab, transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity);
-            _canFire = Time.time + _fireRate; 
+            if (canTrippleShoot){
+                Instantiate(_trippleShootPrefab, transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity); 
+            } else {
+                 Instantiate(_laserPrefab, transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity);
+            }
+             _canFire = Time.time + _fireRate; 
         }
+       
     }
 
     private void Movements() {

@@ -6,8 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     
-    [SerializeField]
-    private bool canTrippleShoot = false;
+    public bool canTrippleShoot = false;
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -44,16 +43,11 @@ public class Player : MonoBehaviour
     {
         // Spawn my laser
         // Quaternion.identity: No rotation or default rotation
-        if (Time.time > _canFire)
-        {
-            if (canTrippleShoot){
-                Instantiate(_trippleShootPrefab, transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity); 
-            } else {
-                 Instantiate(_laserPrefab, transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity);
-            }
-             _canFire = Time.time + _fireRate; 
-        }
-       
+        if (!(Time.time > _canFire)) return;
+        Instantiate(canTrippleShoot ? _trippleShootPrefab : _laserPrefab,
+            transform.position + new Vector3(0f, 0.88f, 0f), Quaternion.identity);
+        _canFire = Time.time + _fireRate;
+
     }
 
     private void Movements() {
@@ -64,8 +58,8 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         // Time.deltaTime:  é o intervalo de tempo entre um Update e outro
-        transform.Translate(Vector3.right * _speed * horizontalInput * Time.deltaTime);
-        transform.Translate(Vector3.up * _speed * verticalInput * Time.deltaTime);
+        transform.Translate(_speed * horizontalInput * Time.deltaTime * Vector3.right);
+        transform.Translate(_speed * verticalInput * Time.deltaTime * Vector3.up);
 
         // Y BOUNDARIES 
         if (transform.position.y > 0) 
@@ -94,5 +88,18 @@ public class Player : MonoBehaviour
         // {
         //     transform.position = new Vector3(8.5f, transform.position.y, 0.0f);
         // }            
+    }
+
+    public void TrippleShootPowerupOn()
+    {
+        canTrippleShoot = true;
+        StartCoroutine(TrippleShootPowerDownRoutine());
+    }
+
+    public IEnumerator TrippleShootPowerDownRoutine()
+    {
+        // suspend power up after 5 seconds
+        yield return new WaitForSeconds(5.0f);
+        canTrippleShoot = false;
     }
 }

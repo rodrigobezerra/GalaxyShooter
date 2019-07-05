@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
 {
     
     public bool canTrippleShoot = false;
+    
+    public bool canSpeedBoost = false;
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -57,7 +59,10 @@ public class Player : MonoBehaviour
         // Positivo: movimentando-se para a direita;
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
-        // Time.deltaTime:  é o intervalo de tempo entre um Update e outro
+
+        _speed = canSpeedBoost ? 10 : 5;
+        
+        // Time.deltaTime: interval between an update an another
         transform.Translate(_speed * horizontalInput * Time.deltaTime * Vector3.right);
         transform.Translate(_speed * verticalInput * Time.deltaTime * Vector3.up);
 
@@ -101,5 +106,18 @@ public class Player : MonoBehaviour
         // suspend power up after 5 seconds
         yield return new WaitForSeconds(5.0f);
         canTrippleShoot = false;
+    }
+    
+    public void SpeedBoostPowerupOn()
+    {
+        canSpeedBoost = true;
+        StartCoroutine(SpeedBoostPowerupDownRoutine());
+    }
+
+    public IEnumerator SpeedBoostPowerupDownRoutine()
+    {
+        // suspend power up after 5 seconds
+        yield return new WaitForSeconds(5.0f);
+        canSpeedBoost = false;
     }
 }
